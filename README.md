@@ -15,7 +15,8 @@ module that
   which have the same effect (FIFO) as the operations with the same name on
   [Arrays]( https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array).
 
-**The** <a href="http://usejsdoc.org/">jsdoc</a> **generated documentation is** <a href="./doc/index.html">here</a>.
+**The** <a href="https://www.npmjs.com/package/jsdoc-to-markdown">jsdoc2md</a>
+**generated documentation is** [here](cbuf.md).
 ## Installation
 
 Standard: 
@@ -26,7 +27,7 @@ The module has no dependencies.
 
 ## API (informal)
 
-[*For the 'formal' API, see the jsdoc output* <a href='./doc/index.html'>here</a>]
+[*For the 'formal' API, see the jsdoc2md output* [here](cbuf) ]
 
 Being new to javascript and not liking the dynamic binding (`this`) story, this little
 module does not use classes. Instead it uses a factory function and
@@ -95,7 +96,7 @@ The other data members of the buffer are
 ```
 
 Here is a javascript expression to transform a triple 
-```
+```js
 (start, size, max_size)
 ```
 to the sequence of indices in a circular buffer of `max_size` capacity 
@@ -136,7 +137,7 @@ then the sequence it represents is `[13, 14, 10]`:
 
 Based on the `contents` function it is easy to formulate an invariant function
 as well as pre- and post-conditions for the `push` and `shift` operations. See
-<a href="./doc/test/global.html#invariant">code</a>.
+[code](cbuf-test.md#invariant).
 
 More (and better) info on circular buffers can be found e.g. on
 [Wikipedia](https://en.wikipedia.org/wiki/Circular_buffer).
@@ -232,8 +233,7 @@ Here `for..of` is understood by the system because the
 [generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function%2A)  lives in `iterable[Symbol.iterator]`, a well known
 [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator).
 
-See the source 
-<a href="./doc/global.html#cbuf_iterable">code</a>.
+See the [source](cbuf.md). 
 
 ### Append an element to the sequence in the buffer.
 
@@ -270,10 +270,10 @@ explicitly set to `undefined`.
 
 ### That's it
 
-The whole [thing](./cbuf.es7.html) takes 67 lines (excluding comments) and contains but 3 conditional statements (`if` or `?`). 
+The whole [thing](cbuf.es7) takes 67 lines (excluding comments) and contains but 3 conditional statements (`if` or `?`). 
 
 More information can be found in the 'specify and test' file
-[`cbuf-doc.es7`](./test/global.html).
+[`cbuf-doc.es7`](cbuf-test.md).
 There the invariant defining a legal state of a circular buffer is defined as
 are the 'contracts' (pre- and postconditions) that must be respected by the
 update operations `CBUF.push` and `CBUF.shift`.
@@ -285,8 +285,7 @@ program that can be used in the traditional way:
 ```
 which also does several incantations of `babel` to support 2017 syntax.
 It translates
-`.es7` to `.js` files. It also uses [`pandoc`](https://pandoc.org/) to convert
-`README.md` to `README.html`.
+`.es7` to `.js` files.
 Also
 `make install` and `make check` (to do the tests) are supported, as are `make
 clean` and `make doc`.
@@ -298,8 +297,8 @@ The Makefile is actually very small:
   # some files e.g. bashscripts += myscript.sh
   #
   # Below are some standard ones
-  src = error.es7 assert.es7 cbuf.es7
-  tst = cbuf-test.es7
+  src = cbuf.es7
+  tst = cbuf-test.es7 assert-test.es7
   #
   # See 'rules.mk' to have an idea what goals are available.
   # Here we define the first one which will thus be the default:

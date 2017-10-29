@@ -290,8 +290,8 @@ function check_iterable(cbuf) {
 }
 
 /** 
- * Check that scanning <code>cbuf</code> in a traditional way from
- * cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]] onwards yields
+ * Check that scanning <code>cbuf</code> in a traditional way, starting from
+ * cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]], yields
  * <code>contents(cbuf)</code>.
  * If the test failed, it will be noted using {@link assert}
  * @param {CircularBuffer} cbuf to be checked

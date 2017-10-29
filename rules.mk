@@ -5,7 +5,6 @@ $(call dirof, $(tools)): $(node)/%:
 
 $(nbin)/babel: $(call dirof, $(babeltools))
 $(nbin)/eslint: $(call dirof, $(linttools)) eslintrc.json
-$(nbin)/jsdoc: $(call dirof, $(doctools))
 # first babel tools, then babel runtime
 $(node)/babel-runtime: $(call dirof,$(babeltools))
 
@@ -14,7 +13,7 @@ $(call dirof, $(libs)): $(node)/%:
 	npm install --save $(@F)
 
 %.html: espell %.md 
-	./$< $(word 2,$^) && pandoc $< >$@
+	./$< $(word 2,$^) && pandoc $(word 2, $^) >$@
 #
 #### .es7 -> .js ######################################################
 # 
@@ -37,14 +36,15 @@ check: install $(tst:%.es7=%.js) $(bashscripts)
 lint: install $(nbin)/eslint babel-eslint
 	@eslint --config eslintrc.json *.es7 && echo "Eslint OK"
 
-#		 --template $(node)/ink-docstrap/template 
-doc: $(nbin)/jsdoc $(shell ls *.es7|grep -v test)
-	rm -fr doc && mkdir doc && \
-		  $< \
-		  --verbose \
-	  --destination doc \
-	  --configure jsdoc.conf \
-		  $(filter-out $<, $^) --readme README.md
-
+%.md: %.es7 
+	jsdoc2md \
+		--param-list-format list \
+		--configure ./jsdoc.conf \
+		--global-index-format grouped \
+		--no-cache \
+		--private \
+		--separators \
+		--example-lang js \
+		$< > $@
 
 .PHONY: all install uninstall clean check doc $(tools) $(libs)
