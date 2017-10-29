@@ -1,0 +1,107 @@
+'use strict';
+
+/**
+ * @file Some utilities (error, assert and friends) too simple to get elsewhere.
+ */
+
+/**
+ * @param {String} name to add to a standard 
+ * <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a> object.
+ *
+ * @param {String} message to pass to the 
+ * <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a> constructor
+ *
+ * @returns {Error} an 
+ * <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a> object with a name
+ *
+ * @example
+ *  try {
+ *    ..
+ *    throw error('PARSING', 'Unexpected token');
+ *    ..
+ *  }
+ *  catch (e) {
+ *    console.error(e.name, ': ', e.message);
+ *  }
+ */
+function error(name, message) {
+  let e = new Error(message);
+  e.name = name;
+  return e;
+}
+
+/**
+ * This is private but can be retrieved using the {@link nerrors} function.
+ * 
+ * @global 
+ */
+let errors = 0;
+
+/**
+ * @description Non-throwing assert function. If an assertion fails, the error is
+ * noted by increasing {@link nerrors} but no exception is thrown.
+ *
+ * @param {Expression} e to be tested
+ *
+ * @param {String} text_if_true is <code>e</code> is 'truthy', this text
+ *   will be shown using console.log()
+ *
+ * @param {String} text_if_false is <code>e</code> is not 'truthy', this text
+ *  will be shown using console.error()
+ *
+ * @returns {Boolean} true iff <code>e</code> is 'truthy'
+ *
+ * @see nerrors
+ */
+function assert(e, text_if_true, text_if_false) {
+  if (e) {
+    console.log(`OK  ${text_if_true}`);
+    return true;
+  }
+  else {
+    console.error(`FAIL ${text_if_false}`);
+    ++errors;
+    return false
+  }
+}
+
+/**
+ * @description Unforgiving assert function. 
+ * If an assertion fails, an error is thrown.
+ *
+ * @param {Expression} e expression to be tested
+ *
+ * @param {String} text_if_true is <code>e</code> is 'truthy', this text
+ *   will be shown using console.log()
+ *
+ * @param {String} text_if_false is <code>e</code> is 'truthy', this text
+ *  will be shown using console.error()
+ *
+ * @returns {Boolean} true iff <code>e</code> is 'truthy', else throws an error
+ * @throws {Error} if <code>e</code> is not 'truthy'.
+ *
+ * @see error
+ */
+function assertx(e, text_if_true, text_if_false) {
+  if (e) {
+    console.log(`OK  ${text_if_true}`);
+    return true;
+  }
+  else {
+    console.error(`FAIL ${text_if_false}`);
+    throw error('FAIL', text_if_false);
+  }
+}
+
+/**
+ * @returns {Integer} the number of errors so far, i.e. the number of times 
+ * {@link assert} failed.
+ * @see assert
+ */
+function nerrors() {
+  return errors;
+}
+
+export { error, assert, assertx, nerrors};
+
+
