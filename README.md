@@ -9,12 +9,13 @@ There are several other circular buffer packages available on npm.
 
 The reason for developing this module is that I wanted to write a simple
 module that
-- helps me learn a bit about javascript (I'm a novice)
-- is efficient
-- provides exactly the functionality that is needed: push and shift,
+* helps me learn a bit about javascript (I'm a novice)
+* is efficient
+* provides exactly the functionality that is needed: push and shift,
   which have the same effect (FIFO) as the operations with the same name on
   [Arrays]( https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array).
 
+**The** <a href="http://usejsdoc.org/">jsdoc</a> **generated documentation is** <a href="./doc/index.html">here</a>.
 ## Installation
 
 Standard: 
@@ -25,7 +26,7 @@ The module has no dependencies.
 
 ## API (informal)
 
-[<i>For the 'formal' API, see the jsdoc output <a href='./global.html'>here</a>  where also the source code can be found</i>]
+[*For the 'formal' API, see the jsdoc output* <a href='./doc/index.html'>here</a>]
 
 Being new to javascript and not liking the dynamic binding (`this`) story, this little
 module does not use classes. Instead it uses a factory function and
@@ -135,7 +136,7 @@ then the sequence it represents is `[13, 14, 10]`:
 
 Based on the `contents` function it is easy to formulate an invariant function
 as well as pre- and post-conditions for the `push` and `shift` operations. See
-<a href="./test/global.html#invariant">code</a>.
+<a href="./doc/test/global.html#invariant">code</a>.
 
 More (and better) info on circular buffers can be found e.g. on
 [Wikipedia](https://en.wikipedia.org/wiki/Circular_buffer).
@@ -232,7 +233,7 @@ Here `for..of` is understood by the system because the
 [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator).
 
 See the source 
-<a href="./global.html#cbuf_iterable">code</a>.
+<a href="./doc/global.html#cbuf_iterable">code</a>.
 
 ### Append an element to the sequence in the buffer.
 
