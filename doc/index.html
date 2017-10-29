@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Circular Buffer</h1><h1>The cbuf module</h1><p>Motivation: a circular buffer is used to keep track of data chunks coming
+from a socket: the reader appends chunks at the back while a
+consumer removes chunks from the front. Thus, this data structure can also be
+used to represent a <a href="https://en.wikipedia.org/wiki/Queue_(abstract_data_type">FIFO queue</a>).</p>
+<p>There are several other circular buffer packages available on npm.</p>
+<p>The reason for developing this module is that I wanted to write a simple
+module that</p>
+<ul>
+<li>helps me learn a bit about javascript (I'm a novice)</li>
+<li>is efficient</li>
+<li>provides exactly the functionality that is needed: push and shift,
+which have the same effect (FIFO) as the operations with the same name on
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Arrays</a>.</li>
+</ul>
+<h2>Installation</h2><p>Standard: </p>
+<pre class="prettyprint source lang-bash"><code>  npm install --save cbuf</code></pre><p>The module has no dependencies.</p>
+<h2>API (informal)</h2><p>[<i>For the 'formal' API, see the jsdoc output <a href='./global.html'>here</a>  where also the source code can be found</i>]</p>
+<p>Being new to javascript and not liking the dynamic binding (<code>this</code>) story, this little
+module does not use classes. Instead it uses a factory function and
+'member functions' that simply take the circular buffer (<code>this</code> if a class were
+used) as their first argument. </p>
+<p>Since a circular buffer object might later be
+extended with extra functionality and properties, it is important to prevent
+accidental reuse and shadowing of property names. Javascript provides
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol">Symbols</a> that are guaranteed to be unique. E.g. there is a property called</p>
+<pre class="prettyprint source lang-js"><code>  const DATA = Symbol('data');</code></pre><p>If, in a later extension, one wishes to again use a 'data' property, calling
+<code>Symbol('data')</code> again will yield a different Symbol. 
+It seems that one cannot use the dot notation when accessing properties named
+by symbols. Thus, instead of <code>cbuf.DATA</code>, one needs to write <code>cbuf[DATA]</code>, as
+with computed property names.</p>
+<p>The following 3 <code>Symbol</code> property names for circular buffer objects are
+exported (<code>cbuf</code> is the name of a circular buffer object):</p>
+<ul>
+<li><code>POP</code>: <code>cbuf[POP]</code> is the population, i.e. the number of elements currently
+in the buffer),</li>
+<li><code>DATA</code>: <code>cbuf[DATA]</code> is an
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a> containing <code>cbuf[DATA].length</code> available slots to 
+store elements in. Obviously,<pre class="prettyprint source lang-js"><code>  0 &lt; cbuf[POP] &lt;= cbuf[DATA].length</code></pre>must hold at all times.</li>
+<li><code>BEGIN</code>: <code>cbuf[BEGIN]</code> is the index in <code>cbuf[DATA]</code> where the first (oldest) 
+element in the circular buffer/FIFO queue lives, if the buffer is not empty.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>  0 &lt;= cbuf[BEGIN] &lt; cbuf[DATA].length
+
+  if (cbuf[POP] > 0)
+    cbuf[DATA][BEGIN] // is oldest element in buffer, `cbuf_shift` will return it</code></pre><p>One can think of the contents of a circular buffer as a sequence, with a first
+and last element, if not empty.
+It may be that, in the circular buffer (<code>cbuf[DATA]</code>) array, the index of the
+last element is smaller than the index of the first element.
+This is illustrated in the example below where '<code>X</code>' means an element is
+present at the index (of the circular buffer array) below while '-' means no 
+element is present.</p>
+<pre class="prettyprint source lang-js"><code>  cbuf[DATA][]:
+
+    X--XX
+    01234</code></pre><p>This represents a buffer of capacity 5. Its current contents is the sequence </p>
+<pre class="prettyprint source lang-js"><code>  cbuf[DATA][3], cbuf[DATA][4], cbuf[DATA][0]</code></pre><p>The other data members of the buffer are</p>
+<pre class="prettyprint source lang-js"><code>  cbuf[BEGIN] = 3; // index in cbuf[DATA][] of the first element of the sequence
+  cbuf[POP] = 3; // number of elements in the sequence
+  cbuf[DATA].length = 5; // maximal length of a representable sequence</code></pre><p>Here is a javascript expression to transform a triple </p>
+<pre class="prettyprint source"><code>(start, size, max_size)</code></pre><p>to the sequence of indices in a circular buffer of <code>max_size</code> capacity 
+containing
+the elements in the associated sequence.</p>
+<pre class="prettyprint source lang-javascript"><code>let interval = 
+  (start, size, max_size) => 
+    Array.from(Array(start + size).keys())
+      .filter((el, i, _) => start &lt;= i)
+      .map((el) => (el % max_size));</code></pre><p>For the example circular buffer <code>cbuf</code> above,
+the corresponding interval becomes (we show the intermediate results
+corresponding to the successive operations in the definition of <code>interval</code>
+then becomes</p>
+<pre class="prettyprint source lang-javascript"><code>  interval(3, 3, 5) ->
+    (0, 1, 2, 3, 4, 5) // Array.from(Array(3 + 3).keys()
+    (3, 4, 5) // filter((el, i, _) => 3 &lt;= i)
+    (3, 4, 0) // map((el) => (el % 5))</code></pre><p>The sequence represented by the a circular buffer <code>c</code>
+is then readily available as</p>
+<pre class="prettyprint source lang-javascript"><code>let contents(c) =
+  (c) =>
+    interval(c[BEGIN], c[POP], cbuf[DATA].length).map((index)=>c[DATA](index))</code></pre><p>If for the example circular buffer above, </p>
+<pre class="prettyprint source lang-javascript"><code>cbuf[DATA] === [10, undefined, undefined, 13, 14]`:</code></pre><p>then the sequence it represents is <code>[13, 14, 10]</code>:</p>
+<pre class="prettyprint source lang-javascript"><code>  assert( array_eq( contents(cbuf), [13, 14, 10]) )</code></pre><p>Based on the <code>contents</code> function it is easy to formulate an invariant function
+as well as pre- and post-conditions for the <code>push</code> and <code>shift</code> operations. See
+<a href="./test/global.html#invariant">code</a>.</p>
+<p>More (and better) info on circular buffers can be found e.g. on
+<a href="https://en.wikipedia.org/wiki/Circular_buffer">Wikipedia</a>.</p>
+<h3>Import the package</h3><pre class="prettyprint source lang-js"><code>  import CBUF from 'cbuf'</code></pre><h3>Make a new circular buffer:</h3><p>Below we use <code>'und'</code> as a shorthand for <code>undefined</code>.</p>
+<pre class="prettyprint source lang-js"><code>  // create a new circular buffer with a capacity of 5
+  let cbuf = CBUF.create(5); 
+
+  console.log('cbuf capacity = ', cbuf[CBUF.DATA].length); // 5
+  console.log('cbuf begin = ', cbuf[CBUF.BEGIN]); // 0
+  console.log('cbuf population = ', cbuf[CBUF.POP]); // 0
+  console.log('cbuf data = ', cbuf[CBUF.DATA]); // [und und und und und]</code></pre><p>The unique and obligatory parameter is the size of the buffer, i.e.
+the maximum number of elements it can hold at any time.
+This is also called the <em>capacity</em> (<code>cbuf[CBUF.DATA].length</code>) of the buffer.</p>
+<p>It is also possible to clone a buffer:</p>
+<pre class="prettyprint source lang-js"><code>  new_buffer = CBUF.clone(buffer);</code></pre><h3>Retrieve information on the sequence represented by the buffer</h3><p>The sequence stored in a circular buffer is (note the half-open interval):</p>
+<pre class="prettyprint source lang-js"><code>  const data = cbuf[CBUF.DATA]
+  const max = data.length; 
+  const begin = CBUF.BEGIN
+  const pop = cbuf[CBUF.POP]
+
+
+  [ data[begin] .. data[(begin + pop) % max]  [</code></pre><p>There are 2 special cases that can be tested using the Boolean functions
+<code>CBUF.empty</code> and <code>CBUF.full</code>:</p>
+<ul>
+<li>an empty sequence is represented by a buffer where<pre class="prettyprint source lang-js"><code>const CBUF.empty = (cbuf) => (cbuf[CBUF.POP] === 0);</code></pre>returns true;</li>
+<li>for a maximal sequence completely filling the buffer:<pre class="prettyprint source lang-js"><code>const CBUF.full = (cbuf) =>  ( cbuf[CBUF.POP] === cbuf[CBUF.DATA].length );</code></pre>will return true.</li>
+</ul>
+<p>Retrieving the first element of the sequence can be trivially done using</p>
+<pre class="prettyprint source lang-js"><code>  // first element in the buffer, if not empty. undefined otherwise.
+  cbuf[CBUF.DATA][CBUF.BEGIN];</code></pre><p>To retrieve the last element of the sequence:</p>
+<pre class="prettyprint source lang-js"><code>  // last element, or undefined if the sequence is empty
+  CBUF.last(cbuf)</code></pre><p>Thus, one could loop through the elements of the sequence like so:</p>
+<pre class="prettyprint source lang-js"><code>  const max = cbuf[CBUF.DATA].length);
+  let arr = [];
+  let p = 0;
+  while (p &lt; cbuf[CBUF.POP])
+    arr.push(cbuf[CBUF.DATA][(cbuf[CBUF.BEGIN] + p++) % max]);</code></pre><p>Actually, there is an
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators">iterator</a> defined on the circular buffer,
+and the above could be written as </p>
+<pre class="prettyprint source lang-js"><code>  let arr = [];
+  for (const z of CBUF.iterable(cbuf)) {
+    arr.push(z);</code></pre><p>Here <code>for..of</code> is understood by the system because the
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function%2A">generator function</a>  lives in <code>iterable[Symbol.iterator]</code>, a well known
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator">symbol</a>.</p>
+<p>See the source 
+<a href="./global.html#cbuf_iterable">code</a>.</p>
+<h3>Append an element to the sequence in the buffer.</h3><pre class="prettyprint source lang-js"><code>  /* Boolean */ CBUF.push(cbuf, element)</code></pre><p>This will return <code>true</code> if the append succeeded, and <code>false</code> otherwise. In the
+latter case, it must be that the circular buffer is full. Note that the
+following always holds:</p>
+<pre class="prettyprint source lang-js"><code>  if (CBUF.push(cbuf, element))
+    assert(element === CBUF.last(cbuf));</code></pre><h3>Remove an element from the front of the sequence in the buffer.</h3><pre class="prettyprint source lang-js"><code>  // return oldest element or undefined if buffer empty
+  element = CBUF.shift(cbuf)</code></pre><p>This will delete the first element of the sequence and return it.
+If the sequence was empty to start with, the function returns <code>undefined</code>.</p>
+<p>Note also that the place that <code>element</code> occupied in the buffer will be
+explicitly set to <code>undefined</code>. </p>
+<h3>Incrementing an index in <code>cbuf[DATA]</code></h3><pre class="prettyprint source lang-js"><code>  // return index of next position, the one after 'i', in the buffer
+  const cbuf_inc = (cbuf, i) => (i + 1) % cbuf[DATA].length;</code></pre><h3>That's it</h3><p>The whole <a href="./cbuf.es7.html">thing</a> takes 67 lines (excluding comments) and contains but 3 conditional statements (<code>if</code> or <code>?</code>). </p>
+<p>More information can be found in the 'specify and test' file
+<a href="./test/global.html"><code>cbuf-doc.es7</code></a>.
+There the invariant defining a legal state of a circular buffer is defined as
+are the 'contracts' (pre- and postconditions) that must be respected by the
+update operations <code>CBUF.push</code> and <code>CBUF.shift</code>.</p>
+<p>The build tool is the venerable <a href="https://www.gnu.org/software/make/"><code>make</code></a> 
+program that can be used in the traditional way:</p>
+<pre class="prettyprint source lang-bash"><code>  make</code></pre><p>which also does several incantations of <code>babel</code> to support 2017 syntax.
+It translates
+<code>.es7</code> to <code>.js</code> files. It also uses <a href="https://pandoc.org/"><code>pandoc</code></a> to convert
+<code>README.md</code> to <code>README.html</code>.
+Also
+<code>make install</code> and <code>make check</code> (to do the tests) are supported, as are <code>make
+clean</code> and <code>make doc</code>.</p>
+<p>The Makefile is actually very small:</p>
+<pre class="prettyprint source lang-make"><code>  include vars.mk
+  # Check 'vars.mk' for names of lists to which you may want to add
+  # some files e.g. bashscripts += myscript.sh
+  #
+  # Below are some standard ones
+  src = error.es7 assert.es7 cbuf.es7
+  tst = cbuf-test.es7
+  #
+  # See 'rules.mk' to have an idea what goals are available.
+  # Here we define the first one which will thus be the default:
+  # 'make all' is the same as 'make'.
+  #
+  # If you want to know what will be done before
+  # actually doing it, do 'make -n'. E.g. 'make -n clean'.
+  all: install 
+  # Another nonstandard rule that combines the 'check' (running test programs)
+  # with 'lint':
+  checkall: check lint
+  #
+  # A bunch of rules that explain how to make '.js' files from '.es7' files,
+  # process markdown files etc etc
+  include rules.mk</code></pre><p>i.e., only 6 lines excluding comments. There's a good reason to separate
+<code>rules.mk</code> and <code>vars.mk</code>: I suspect future projects can simply copy them and
+just bother with another tiny <code>Makefile</code>.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CBUF.html">CBUF</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BEGIN">BEGIN</a></li><li><a href="global.html#cbuf_clone">cbuf_clone</a></li><li><a href="global.html#cbuf_create">cbuf_create</a></li><li><a href="global.html#cbuf_empty">cbuf_empty</a></li><li><a href="global.html#cbuf_full">cbuf_full</a></li><li><a href="global.html#cbuf_inc">cbuf_inc</a></li><li><a href="global.html#cbuf_iterable">cbuf_iterable</a></li><li><a href="global.html#cbuf_last">cbuf_last</a></li><li><a href="global.html#cbuf_push">cbuf_push</a></li><li><a href="global.html#cbuf_shift">cbuf_shift</a></li><li><a href="global.html#cbuf_tostring">cbuf_tostring</a></li><li><a href="global.html#DATA">DATA</a></li><li><a href="global.html#POP">POP</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 29 2017 14:51:58 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
