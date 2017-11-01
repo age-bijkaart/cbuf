@@ -1,5 +1,5 @@
 {
-  "name": "cbuf",
+  "name": "@dvermeir/cbuf",
   "version": "0.1.0",
   "description": "Efficient Circular FIFO Buffer Implementation.",
   "main": "cbuf.es7",

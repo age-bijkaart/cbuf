@@ -21,9 +21,9 @@ module that
 
 Standard: 
 ```bash
-  npm install --save cbuf
+  npm install --save @dvermeir/cbuf
 ```
-The module has no dependencies.
+The module has no runtime dependencies.
 
 ## API (informal)
 
