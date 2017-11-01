@@ -26,7 +26,7 @@ where the
 The above depends on an import statement such as
 <blockquote>
 <code>
-import CBUF from &#39;cbuf&#39;;
+import CBUF from &#39;@dvermeir/cbuf&#39;;
 </code>
 </blockquote></dd>
 </dl>
@@ -77,7 +77,7 @@ where the
 The above depends on an import statement such as
 <blockquote>
 <code>
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
 </code>
 </blockquote>
 
@@ -94,7 +94,7 @@ buffer. An 'empty' index in the array contains <b>undefined</b>
 **Kind**: global constant  
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  console.log(c[CBUF.DATA][0]); // print 'undefined'
 ```
@@ -111,7 +111,7 @@ circular buffer.
 **Kind**: global constant  
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  console.log(c[CBUF.POP]); // print 0
  console.log(c[CBUF.DATA].length); // print 10
@@ -132,7 +132,7 @@ if this buffer is not empty (POP > 0).
 **Kind**: global constant  
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  CBUF.push(c, 'something');
  console.log(c[CBUF.BEGIN]); // print 'something';
@@ -169,7 +169,7 @@ the maximal capacity. Must be strictly positive, obviously
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  // postcondition: 
  assert( c[CBUF.POP] === 0 && c[CBUF.BEGIN] === 0 && 
@@ -201,7 +201,7 @@ contents.
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  ... // do stuff with c
  let cc = CBUF.clone(c);
@@ -229,7 +229,7 @@ Check whether a circular buffer is empty
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  ... // do stuff with c
  if (CBUF.empty(c))
@@ -253,7 +253,7 @@ to append more elements to it.
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  ... // do stuff with c
  // make room by removing the oldest element, if it is not 'in use', e.g. by
@@ -312,7 +312,7 @@ that lives in it.
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  const n = c[CBUF.DATA].length - 1;
  const next = CBUF.inc(c, n) ;
@@ -343,7 +343,7 @@ append operation.
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(2);
  let x; 
  let y;
@@ -382,7 +382,7 @@ way of a possible garbage collection of <code>x</code>
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(2);
  let x; 
  let y;
@@ -418,7 +418,7 @@ iterable</a>
 
 **Example**  
 ```js
-import CBUF from 'cbuf';
+import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(3);
  let x = { 'a', 'b', 'c', 'd' };
  assert(CBUF.push(cbuf,x[0])); // 'a'

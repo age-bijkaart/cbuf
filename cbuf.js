@@ -4,7 +4,7 @@
  * containing the elements present in the circular
  * buffer. An 'empty' index in the array contains <b>undefined</b>
  * @example
- *   import CBUF from 'cbuf';
+ *   import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  console.log(c[CBUF.DATA][0]); // print 'undefined'
  */
@@ -53,7 +53,7 @@ var DATA = (0, _symbol2.default)('data');
  * The property contains the number of elements currently available in the
  * circular buffer.
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  console.log(c[CBUF.POP]); // print 0
  *  console.log(c[CBUF.DATA].length); // print 10
@@ -67,7 +67,7 @@ var POP = (0, _symbol2.default)('pop');
  * in the DATA array of the first (oldest) element of the circular buffer,
  * if this buffer is not empty (POP > 0). 
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  CBUF.push(c, 'something');
  *  console.log(c[CBUF.BEGIN]); // print 'something';
@@ -97,7 +97,7 @@ var BEGIN = (0, _symbol2.default)('begin');
  *  capacity equal to the parameter
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  // postcondition: 
  *  assert( c[CBUF.POP] === 0 && c[CBUF.BEGIN] === 0 && 
@@ -135,7 +135,7 @@ function cbuf_create(capacity) {
  * @returns {CircularBuffer} A shallow clone of the argument. 
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  ... // do stuff with c
  *  let cc = CBUF.clone(c);
@@ -163,7 +163,7 @@ function cbuf_clone(cbuf) {
  * @returns {Boolean} true iff <code>cbuf[CBUF.POP] === 0</code>
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  ... // do stuff with c
  *  if (CBUF.empty(c))
@@ -182,7 +182,7 @@ var cbuf_empty = function cbuf_empty(cbuf) {
  *  <code>cbuf[CBUF.POP] === cbuf[CBUF.DATA].length</code>
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  ... // do stuff with c
  *  // make room by removing the oldest element, if it is not 'in use', e.g. by
@@ -232,7 +232,7 @@ var cbuf_last = function cbuf_last(cbuf) {
  *  The return value <code>r</code> also sits in
  *  <code>[0 .. cbuf[DATA].length[</code>
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
  *  const n = c[CBUF.DATA].length - 1;
  *  const next = CBUF.inc(c, n) ;
@@ -259,7 +259,7 @@ var cbuf_inc = function cbuf_inc(cbuf, i) {
  *  <code>false</code> otherwise, including when <code>x === undefined</code>.
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(2);
  *  let x; 
  *  let y;
@@ -298,7 +298,7 @@ function cbuf_push(cbuf, x) {
  *  or <b>undefined</b> if the buffer is [empty]{@link cbuf_empty}
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(2);
  *  let x; 
  *  let y;
@@ -336,7 +336,7 @@ function cbuf_shift(cbuf) {
  * iterable</a>
  *
  * @example
- *  import CBUF from 'cbuf';
+ *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(3);
  *  let x = { 'a', 'b', 'c', 'd' };
  *  assert(CBUF.push(cbuf,x[0])); // 'a'
@@ -450,7 +450,7 @@ function cbuf_tostring(cbuf) {
  * The above depends on an import statement such as
  * <blockquote>
  * <code>
- * import CBUF from 'cbuf';
+ * import CBUF from '@dvermeir/cbuf';
  * </code>
  * </blockquote>
  *

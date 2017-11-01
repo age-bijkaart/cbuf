@@ -145,7 +145,7 @@ More (and better) info on circular buffers can be found e.g. on
 
 ### Import the package
 ```js
-  import CBUF from 'cbuf'
+  import CBUF from '@dvermeir/cbuf'
 ```
 
 ### Make a new circular buffer:
