@@ -55,7 +55,11 @@ var DATA = (0, _symbol2.default)('data');
  * @example
  *  import CBUF from 'cbuf';
  *  let c = CBUF.create(10);
- *  console.log(c[CBUF.POP]); // print 10
+ *  console.log(c[CBUF.POP]); // print 0
+ *  console.log(c[CBUF.DATA].length); // print 10
+ *  CBUF.push(c, 'something');
+ *  console.log(c[CBUF.POP]); // print 1
+ *  console.log(c[CBUF.DATA][0]); // print 'something'
  */
 var POP = (0, _symbol2.default)('pop');
 
