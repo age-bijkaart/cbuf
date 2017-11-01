@@ -2,33 +2,17 @@
 
 <dl>
 <dt><a href="#module_CBUF">CBUF</a></dt>
-<dd><p>All functions/constants in this file are exported. Note that the naming
-strategy is such that an &#39;internal&#39; call</p>
-<blockquote>
-<code>
-cbuf_push(c, x);
-</code>
-</blockquote>
-becomes
-<blockquote>
-<code>
-   CBUF.push(c,x);
-</code>
-</blockquote>
-which is not too far from a &#39;class based&#39;
-<code>c.push(x)</code> 
-where the
-&#39;<code>this</code>&#39; argument is always the first argument in the 
-&#39;<code>CBUF.push(c, .. )</code> call. Except that the object is not called
-&#39;<code>this</code>&#39; and its binding is trivial, unlike that of 
-&#39;<code>this</code>&#39;.
-</blockquote>
-The above depends on an import statement such as
-<blockquote>
-<code>
-import CBUF from &#39;@dvermeir/cbuf&#39;;
-</code>
-</blockquote></dd>
+<dd><p>All functions/constants in the CBUF module are implemented in this file and 
+are exported as shown below. </p>
+<pre><code class="lang-javascript">    module.exports = {
+      POP: POP, BEGIN: BEGIN, DATA: DATA,
+      create: cbuf_create, clone: cbuf_clone,
+      empty: cbuf_empty, full: cbuf_full, last: cbuf_last, iterable: cbuf_iterable,
+      push: cbuf_push, inc: cbuf_inc, shift: cbuf_shift,
+      tostring: cbuf_tostring
+    };
+</code></pre>
+</dd>
 </dl>
 
 ## Constants
@@ -53,33 +37,17 @@ import CBUF from &#39;@dvermeir/cbuf&#39;;
 <a name="module_CBUF"></a>
 
 ## CBUF
-All functions/constants in this file are exported. Note that the naming
-strategy is such that an 'internal' call
-<blockquote>
-<code>
-cbuf_push(c, x);
-</code>
-</blockquote>
-becomes
-<blockquote>
-<code>
-   CBUF.push(c,x);
-</code>
-</blockquote>
-which is not too far from a 'class based'
-<code>c.push(x)</code> 
-where the
-'<code>this</code>' argument is always the first argument in the 
-'<code>CBUF.push(c, .. )</code> call. Except that the object is not called
-'<code>this</code>' and its binding is trivial, unlike that of 
-'<code>this</code>'.
-</blockquote>
-The above depends on an import statement such as
-<blockquote>
-<code>
-import CBUF from '@dvermeir/cbuf';
-</code>
-</blockquote>
+All functions/constants in the CBUF module are implemented in this file and 
+are exported as shown below. 
+```javascript
+	module.exports = {
+	  POP: POP, BEGIN: BEGIN, DATA: DATA,
+	  create: cbuf_create, clone: cbuf_clone,
+	  empty: cbuf_empty, full: cbuf_full, last: cbuf_last, iterable: cbuf_iterable,
+	  push: cbuf_push, inc: cbuf_inc, shift: cbuf_shift,
+	  tostring: cbuf_tostring
+	};
+```
 
 
 * * *
@@ -151,7 +119,7 @@ Although not available as a direct property of the buffer -- the only
 such properties are [DATA](#DATA), [POP](#POP) and 
 [BEGIN](#BEGIN) --
 it can easily be accessed using the expression 
-<code>c[CBUF.DATA].length</code> where <code>c</code> is the
+`c[CBUF.DATA].length` where `c` is the
 circular buffer.
 <br/>
 The function also [seals](
@@ -189,7 +157,7 @@ array is cloned using [slice](
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
 <br/>
 Note that cloning a 'subclass', i.e. a circular buffer with extra data
-properties, will usually work using <code>CBUF.clone</code> but this should be verified.
+properties, will usually work using `CBUF.clone` but this should be verified.
 E.g. an extra array data property will need extra code to clone its
 contents.
 
@@ -222,7 +190,7 @@ import CBUF from '@dvermeir/cbuf';
 Check whether a circular buffer is empty
 
 **Kind**: global function  
-**Returns**: <code>Boolean</code> - true iff <code>cbuf[CBUF.POP] === 0</code>  
+**Returns**: <code>Boolean</code> - true iff `cbuf[CBUF.POP] === 0`.  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - a valid circular buffer
@@ -246,7 +214,7 @@ to append more elements to it.
 
 **Kind**: global function  
 **Returns**: <code>Boolean</code> - true iff  
- <code>cbuf[CBUF.POP] === cbuf[CBUF.DATA].length</code>  
+ `cbuf[CBUF.POP] === cbuf[CBUF.DATA].length`.  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - a valid circular buffer
@@ -277,9 +245,7 @@ If the buffer is empty, <b>undefined</b> is returned.
 <br/>
 If the buffer is not empty, the index of the last element in DATA is
 <blockquote>
-<code>
- cbuf[DATA][(cbuf[BEGIN] + cbuf[POP] - 1) % cbuf[DATA].length]);
-</code>
+ `cbuf[DATA][(cbuf[BEGIN] + cbuf[POP] - 1) % cbuf[DATA].length])`
 </blockquote>
 
 **Kind**: global function  
@@ -302,13 +268,13 @@ that lives in it.
 
 **Kind**: global function  
 **Returns**: <code>Integer</code> - the index following the parameter index
- <code>i</code> in <code>cbuf[DATA][i]</code>. 
- The return value <code>r</code> also sits in
- <code>[0 .. cbuf[DATA].length[</code>  
+ `i` in `cbuf[DATA][i]`.
+ The return value `r` also sits in
+ `[0 .. cbuf[DATA].length[`  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - a valid circular buffer
-- an <code>Integer</code> - integer from <code>[0 .. cbuf[DATA].length[</code>
+- an <code>Integer</code> - integer from `[0 .. cbuf[DATA].length[`
 
 **Example**  
 ```js
@@ -334,8 +300,8 @@ The return value is a boolean indicating the success or failure of the
 append operation.
 
 **Kind**: global function  
-**Returns**: <code>Boolean</code> - <code>true</code> iff the operation succeeded,
- <code>false</code> otherwise, including when <code>x === undefined</code>.  
+**Returns**: <code>Boolean</code> - `true` iff the operation succeeded,
+ `false` otherwise, including when `x === undefined`  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - a valid circular buffer
@@ -366,16 +332,16 @@ https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics))) terms).
 If the operation fails, and this can only happen if the buffer is empty,
 <b>undefined</b> is returned.
 <br/>
-If the operation succeeds and returns a defined object <code>x</code> from 
-index <code>cbuf[DATA][BEGIN]</code>, the contents of <code>x</code>'s 
+If the operation succeeds and returns a defined object `x` from 
+index `cbuf[DATA][BEGIN]`, the contents of `x`'s 
 index will be set
-to <b>undefined</b>. That way, the circular buffer will not be in the
-way of a possible garbage collection of <code>x</code>
+to `undefined`. That way, the circular buffer will not be in the
+way of a possible garbage collection of `x`.
 
 **Kind**: global function  
 **Returns**: <code>Any</code> - the defined first element 
- <code>(cbuf[CBUF.DATA][CBUF.BEGIN])</code> shifted out of cbuf 
- or <b>undefined</b> if the buffer is [empty](#cbuf_empty)  
+ `(cbuf[CBUF.DATA][CBUF.BEGIN])` shifted out of cbuf 
+ or `undefined` if the buffer is [empty](#cbuf_empty).  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - a valid circular buffer
@@ -452,7 +418,7 @@ import CBUF from '@dvermeir/cbuf';
 Make a human-readable string representation of a circular buffer.
 
 **Kind**: global function  
-**Returns**: <code>String</code> - a string representation of <code>cbuf</code>  
+**Returns**: <code>String</code> - a string representation of `cbuf`  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - a valid circular buffer

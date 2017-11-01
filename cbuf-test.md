@@ -24,26 +24,29 @@
 Interval(from, size, n): generates the indices in the DATA array of a
 circular buffer that
 <ul>
-<li> has '<code>from</code>' as the index of the first element
-<li> and that contains '<code>size</code>' elements out of
-<li> and has an underlying array of size '<code>n</code>'
+<li> has `from` as the index of the first element
+<li> and that contains `size` elements out of
+<li> an underlying array of size `n`
 </ul>
 E.g. for n = 3, from = 2, size = 2, we'll obtain [ 2, 0 ].
 consisting of 'buf[2] buf[0]' represented by the interval [2..1[.
 
 The result is obtained as follows:
 <blockquote>
-  <code>
-  [2 .. (2 + size)[ =  [2 .. 4 [
-  </code>
+  `[2 .. (2 + size)[ =  [2 .. 4 [`
   <br/>
-  <code>
-    =>  mod (n == 3) => [2 ..  1 [
-  </code>
+    `=>  mod (n == 3) => [2 ..  1 [`
 </blockquote>
+```javascript
+let interval = 
+  (from, size, n) => 
+    Array.from(Array(from + size).keys())
+      .filter((el, i, _) => from <= i)
+      .map((el) => (el % n));
+```
 The precondition is
 <blockquote>
-<code>from >= 0 && n > 0 &&  0 >= size < n</code>.
+`from >= 0 && n > 0 &&  0 >= size < n`
 </blockquote>
 
 **Kind**: global function  
@@ -60,8 +63,13 @@ The precondition is
 <a name="begin"></a>
 
 ## begin(cbuf) ⇒ <code>Integer</code>
+Shorthand.
+```javascript
+const begin = (cbuf) => cbuf[CBUF.BEGIN];
+```
+
 **Kind**: global function  
-**Returns**: <code>Integer</code> - <code>cbuf[CBUF.BEGIN]</code>  
+**Returns**: <code>Integer</code> - `cbuf[CBUF.BEGIN]`  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -72,8 +80,13 @@ The precondition is
 <a name="pop"></a>
 
 ## pop(cbuf) ⇒ <code>Integer</code>
+Shorthand.
+```javascript
+const pop = (cbuf) => cbuf[CBUF.POP];
+```
+
 **Kind**: global function  
-**Returns**: <code>Integer</code> - <code>cbuf[CBUF.POP]</code>  
+**Returns**: <code>Integer</code> - `cbuf[CBUF.POP]`  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -84,8 +97,13 @@ The precondition is
 <a name="data"></a>
 
 ## data(cbuf) ⇒ <code>Array</code>
+Shorthand.
+```javascript
+const data = (cbuf) => cbuf[CBUF.DATA];
+```
+
 **Kind**: global function  
-**Returns**: <code>Array</code> - <code>cbuf[CBUF.DATA]</code>  
+**Returns**: <code>Array</code> - `cbuf[CBUF.DATA]`  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -96,8 +114,13 @@ The precondition is
 <a name="length"></a>
 
 ## length(cbuf) ⇒ <code>Integer</code>
+Shorthand.
+```javascript
+const length = (cbuf) => data(cbuf).length;
+```
+
 **Kind**: global function  
-**Returns**: <code>Integer</code> - <code>cbuf[CBUF.DATA].length</code>  
+**Returns**: <code>Integer</code> - `cbuf[CBUF.DATA].length`  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -108,8 +131,13 @@ The precondition is
 <a name="last"></a>
 
 ## last(cbuf) ⇒ <code>Any</code>
+Shorthand.
+```javascript
+const last = (cbuf) => CBUF.last(cbuf);
+```
+
 **Kind**: global function  
-**Returns**: <code>Any</code> - <code>CBUF.last(cbuf)]</code>  
+**Returns**: <code>Any</code> - `CBUF.last(cbuf)]`.  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -120,10 +148,14 @@ The precondition is
 <a name="freesz"></a>
 
 ## freesz(cbuf) ⇒ <code>Integer</code>
-Size of unoccupied part of <code>cbuf[CBUF.DATA]</code.
+Size of unoccupied part of `cbuf[CBUF.DATA]`, each element of this 'free'
+part is `undefined`.
+```javascript
+const freesz = (cbuf) => length(cbuf) - pop(cbuf);
+```
 
 **Kind**: global function  
-**Returns**: <code>Integer</code> - <code>cbuf[CBUF.DATA].length - cbuf{CBUF.POP]</code>  
+**Returns**: <code>Integer</code> - `cbuf[CBUF.DATA].length - cbuf{CBUF.POP]`.  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -135,10 +167,13 @@ Size of unoccupied part of <code>cbuf[CBUF.DATA]</code.
 
 ## contents(cbuf) ⇒ <code>Array</code>
 The contents of a circular buffer is an array of elements, starting with
-the oldest (FIFO, <code>CBUF.shift</code> will return the starting element)
+the oldest (FIFO, `CBUF.shift` will return the starting element)
 and ending with the most recently added.
+```javascript
+const contents = (cbuf) => interval(begin(cbuf), pop(cbuf), length(cbuf)).map((i) => data(cbuf)[i]); 
+```
 This corresponds to the FIFO operations on the buffer: 
-<code>CBUF.push</code> will append at the end while <code>CBUF.shift</code>
+`CBUF.push` will append at the end while `CBUF.shift`
 will remove from the front.
 This function will return this contents as an array of elements in FIFO
 order.
@@ -157,9 +192,21 @@ youngest
 
 ## invariant(cbuf) ⇒ <code>Boolean</code>
 Circular buffer invariant.
+```javascript
+const invariant = (cbuf) => 
+      length(cbuf) > 0
+    && 
+      ( 0 <= pop(cbuf) && pop(cbuf) <= length(cbuf) ) 
+    && 
+      ( 0 <= begin(cbuf) && begin(cbuf) < length(cbuf) )
+    && 
+      contents(cbuf).every((x)=> x !== undefined)
+    && 
+      rest(cbuf).every((x)=> x === undefined)
+```
 
 **Kind**: global function  
-**Returns**: <code>Boolean</code> - true iff the invariant holds on <code>cbuf</code>  
+**Returns**: <code>Boolean</code> - true iff the invariant holds on `cbuf`  
 **Params**
 
 - cbuf <code>CircularBuffer</code>
@@ -170,15 +217,19 @@ Circular buffer invariant.
 <a name="array_eq"></a>
 
 ## array_eq(a1, a2) ⇒ <code>Boolean</code>
-Shallow comparison of arrays, maybe it's built in but I couldn't find it
+Shallow comparison of arrays, maybe it's built in but I couldn't find it 
+```javascript
+const array_eq = (a1, a2) => 
+  (a1.length !== a2.length ? false : a1.every((x, i) => x === a2[i]));
+```
 
 **Kind**: global function  
 **Returns**: <code>Boolean</code> - true iff arrays have the same size and identical
 elements.  
 **Params**
 
-- a1 <code>Array</code> - to be compared with <code>a2</code>
-- a2 <code>Array</code> - to be compared with <code>a1</code>
+- a1 <code>Array</code> - to be compared with `a2`
+- a2 <code>Array</code> - to be compared with `a1`
 
 
 * * *
@@ -190,9 +241,13 @@ Version of the standard
 <a
 href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push">
 Array.push</a> that returns a copy of the array with the element appended
+```javascript
+const array_push = (a, x) => {
+  let b = Array.from(a); b.push(x); return b;
+```
 
 **Kind**: global function  
-**Returns**: <code>Array</code> - copy of <code>a</code> with <code>x</code> appended  
+**Returns**: <code>Array</code> - copy of `a` with `x` appended  
 **Params**
 
 - a <code>Array</code> - array on a copy of which an element will be pushed
@@ -209,17 +264,29 @@ Essentially, the specification says that
 <ul>
 <li>either orig is full and then
 
-  <code>
-  contents(next) == contents(orig)
-  </code>
+  `contents(next) == contents(orig)`
 
 <li>or
 
-  <code>
-  contents(next) == array_push(contents(orig), x)
-  </code>
+  `contents(next) == array_push(contents(orig), x)`
 </ul>
+
 Of course, the invariant must be true before and after the operation.
+
+```javascript
+const cbuf_push_contract = (orig, x, next) => 
+  (
+      invariant(orig)
+    && 
+      invariant(next) 
+    && 
+      (
+            array_eq(array_push(contents(orig), x), contents(next)) && last(next) === x 
+      || 
+            CBUF.full(orig) && array_eq(contents(orig), contents(next)) 
+      )
+  );
+```
 
 **Kind**: global function  
 **Returns**: <code>Boolean</code> - true iff the contract is satisfied  
@@ -237,16 +304,16 @@ Of course, the invariant must be true before and after the operation.
 
 ## checked_cbuf_push(cbuf, x, result) ⇒ <code>Boolean</code>
 Execute the push operation and check that its contract is satisfied 
-The contract is checked by [assert](assert).
+The contract is checked by [assert](./assert-test.md#assert).
 
 **Kind**: global function  
-**Returns**: <code>Boolean</code> - true iff <code>CBUF.push(cbuf, x)</code> succeeded  
-**See**: <a href="../global.html#cbuf_push">cbuf_push</a>  
+**Returns**: <code>Boolean</code> - true iff `CBUF.push(cbuf, x)` succeeded  
+**See**: [cbuf_push](./cbuf.md#cbuf_push)  
 **Params**
 
 - cbuf <code>CircularBuffer</code> - circular buffer on which an element will be
 pushed
-- x <code>Any</code> - element to be pushed, must not be <code>undefined</code>.
+- x <code>Any</code> - element to be pushed, must not be `undefined`,
 - result <code>Boolean</code> - of the push operation
 
 
@@ -259,20 +326,31 @@ Specification (contract) of the 'shift' operation.
 Essentially, the specification says that:
 <ul>
 <li> either orig is empty:
-  <code>x === undefined && next === orig</code>
+  `x === undefined && next === orig`
 <li> or
-  <code>contents(orig) == x ++ contents(next)</code>
+  `contents(orig) == x ++ contents(next)`
   where '++' means ``append''
 </ul>
-Naturally, both <code>orig</code> and <code>next</code> should satisfy the
+Naturally, both `orig` and `next` should satisfy the
 invariant.
+
+```javascript
+const cbuf_shift_contract = (orig, x, next) =>
+      invariant(orig)
+   && invariant(next)
+   && (
+        pop(orig) === 0 && array_eq(contents(next), contents(orig)) && x === undefined
+      || 
+        array_eq(contents(orig).slice(1), contents(next)) && array_eq([x], contents(orig).slice(0, 1))
+    )
+```
 
 **Kind**: global function  
 **Returns**: <code>Boolean</code> - true iff the contract is satisfied  
 **Params**
 
 - orig <code>CircularBuffer</code> - buffer before shift operation
-- x <code>Any</code> - return of <code>cbuf_shift(orig)</code>
+- x <code>Any</code> - return of `cbuf_shift(orig)`
 - next <code>CircularBuffer</code> - buffer after shift operation
 
 
@@ -282,12 +360,13 @@ invariant.
 
 ## checked_cbuf_shift(orig) ⇒ <code>Any</code>
 Execute the shift operation and check that its contract is satisfied.
-If the contract is not satisfied, the errors is noted using [assert](assert)
+If the contract is not satisfied, the errors is noted using
+[assert](./assert-test.md#assert).
 
 **Kind**: global function  
-**Returns**: <code>Any</code> - the first element of <code>orig</code> or
-<code>undefined</code> if the latter is empty.  
-**See**: <a href="../global.html#cbuf_shift">cbuf_shift</a>  
+**Returns**: <code>Any</code> - the first element of `orig` or
+`undefined` if the latter is empty.  
+**See**: [cbuf_shift](./cbuf.md#cbuf_shift)  
 **Params**
 
 - orig <code>CircularBuffer</code> - buffer before shift operation
@@ -298,13 +377,14 @@ If the contract is not satisfied, the errors is noted using [assert](assert)
 <a name="check_iterable"></a>
 
 ## check_iterable(cbuf) ⇒ <code>Boolean</code>
-Function that checks <code>CBUF.iterable</code> by verifying that 
+Function that checks `CBUF.iterable` by verifying that 
 the result of appending elements from a 
 
-<code>for ..  of</code>
+`for ..  of`
 
-loop equals <code>contents(cbuf).
-If the test failed, it will be noted using [assert](assert)
+loop equals [`contents`](#contents)`(cbuf)`.
+If the test failed, it will be noted using
+[assert](./assert-test.md#assert).
 
 **Kind**: global function  
 **Returns**: <code>Boolean</code> - true iff the test succeeded  
@@ -318,10 +398,11 @@ If the test failed, it will be noted using [assert](assert)
 <a name="check_ordered_access"></a>
 
 ## check_ordered_access(cbuf) ⇒ <code>Boolean</code>
-Check that scanning <code>cbuf</code> in a traditional way, starting from
-cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]], yields
-<code>contents(cbuf)</code>.
-If the test failed, it will be noted using [assert](assert)
+Check that scanning `cbuf` in a traditional way, starting from
+`cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]]`, yields
+`contents(cbuf)`.
+If the test failed, it will be noted using
+[assert](./assert-test.md#assert).
 
 **Kind**: global function  
 **Returns**: <code>Boolean</code> - true iff the test succeeded  

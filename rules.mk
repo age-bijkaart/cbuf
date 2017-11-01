@@ -12,8 +12,6 @@ $(libs): %: $(node)/% # supports e.g. 'make pg'
 $(call dirof, $(libs)): $(node)/%: 
 	npm install --save $(@F)
 
-%.html: espell %.md 
-	./$< $(word 2,$^) && pandoc $(word 2, $^) >$@
 #
 #### .es7 -> .js ######################################################
 # 
@@ -24,7 +22,7 @@ $(call dirof, $(libs)): $(node)/%:
 #
 # Install simply makes sure that all involved files are available, e.g.
 # .es7 files will have been babelized to .js files.
-install: $(datafiles) $(bashscripts) $(tools) $(libs) $(src:%.es7=%.js) \
+install: $(datafiles) $(bashscripts) $(tools) $(libs) $(src:%.es7=%.js) doc
 	
 uninstall clean: 
 	rm -fr $(datafiles) $(node) $(bashscripts) doc *.js package-lock.json LOG
@@ -46,5 +44,25 @@ lint: install $(nbin)/eslint babel-eslint
 		--separators \
 		--example-lang js \
 		$< > $@
+
+README.md: README.hbs $(src)
+	jsdoc2md \
+		--template README.hbs \
+		--param-list-format list \
+		--configure ./jsdoc.conf \
+		--global-index-format grouped \
+		--no-cache \
+		--private \
+		--separators \
+		--example-lang js \
+		--files $(wordlist 2,$(words $^),$^) \
+		$< > $@
+
+
+doc: $(docsrc) espell $(mdfiles)
+	@for f in $(docsrc); \
+	do ./espell $$f || { echo "$$f: spelling error"; exit 1; }; \
+	done
+
 
 .PHONY: all install uninstall clean check doc $(tools) $(libs)

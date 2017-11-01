@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 
-/** @file Test program for the <a href="../index.html">cbuf</a> 
+/** @file
+ * @description Test program for the [cbuf](./README.md) 
  * (circular buffer) module.
  */
 'use strict';
@@ -27,26 +28,29 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /** Interval(from, size, n): generates the indices in the DATA array of a
  * circular buffer that
  * <ul>
- * <li> has '<code>from</code>' as the index of the first element
- * <li> and that contains '<code>size</code>' elements out of
- * <li> and has an underlying array of size '<code>n</code>'
+ * <li> has `from` as the index of the first element
+ * <li> and that contains `size` elements out of
+ * <li> an underlying array of size `n`
  * </ul>
  * E.g. for n = 3, from = 2, size = 2, we'll obtain [ 2, 0 ].
  * consisting of 'buf[2] buf[0]' represented by the interval [2..1[.
  *
  * The result is obtained as follows:
  * <blockquote>
- *   <code>
- *   [2 .. (2 + size)[ =  [2 .. 4 [
- *   </code>
+ *   `[2 .. (2 + size)[ =  [2 .. 4 [`
  *   <br/>
- *   <code>
- *     =>  mod (n == 3) => [2 ..  1 [
- *   </code>
+ *     `=>  mod (n == 3) => [2 ..  1 [`
  * </blockquote>
+```javascript
+let interval = 
+  (from, size, n) => 
+    Array.from(Array(from + size).keys())
+      .filter((el, i, _) => from <= i)
+      .map((el) => (el % n));
+```
  * The precondition is
  * <blockquote>
- * <code>from >= 0 && n > 0 &&  0 >= size < n</code>.
+ * `from >= 0 && n > 0 &&  0 >= size < n`
  * </blockquote>
  *
  * @param {Integer} from starting index
@@ -64,52 +68,81 @@ var interval = function interval(from, size, n) {
   });
 };
 
-/** @param {CircularBuffer} cbuf
- * @returns {Integer} <code>cbuf[CBUF.BEGIN]</code>
+/** Shorthand.
+```javascript
+const begin = (cbuf) => cbuf[CBUF.BEGIN];
+```
+ * @param {CircularBuffer} cbuf
+ * @returns {Integer} `cbuf[CBUF.BEGIN]`
  */
 var begin = function begin(cbuf) {
   return cbuf[_cbuf2.default.BEGIN];
 };
 
-/** @param {CircularBuffer} cbuf
- * @returns {Integer} <code>cbuf[CBUF.POP]</code>
+/** Shorthand.
+```javascript
+const pop = (cbuf) => cbuf[CBUF.POP];
+```
+ *  @param {CircularBuffer} cbuf
+ * @returns {Integer} `cbuf[CBUF.POP]`
  */
 var pop = function pop(cbuf) {
   return cbuf[_cbuf2.default.POP];
 };
 
-/** @param {CircularBuffer} cbuf
- * @returns {Array} <code>cbuf[CBUF.DATA]</code>
+/** Shorthand.
+```javascript
+const data = (cbuf) => cbuf[CBUF.DATA];
+```
+ * @param {CircularBuffer} cbuf
+ * @returns {Array} `cbuf[CBUF.DATA]`
  */
 var data = function data(cbuf) {
   return cbuf[_cbuf2.default.DATA];
 };
-/** @param {CircularBuffer} cbuf
- * @returns {Integer} <code>cbuf[CBUF.DATA].length</code>
+
+/** Shorthand.
+```javascript
+const length = (cbuf) => data(cbuf).length;
+```
+ * @param {CircularBuffer} cbuf
+ * @returns {Integer} `cbuf[CBUF.DATA].length`
  */
 var length = function length(cbuf) {
   return data(cbuf).length;
 };
-/** @param {CircularBuffer} cbuf
- * @returns {Any} <code>CBUF.last(cbuf)]</code>
+
+/** Shorthand.
+```javascript
+const last = (cbuf) => CBUF.last(cbuf);
+```
+ * @param {CircularBuffer} cbuf
+ * @returns {Any} `CBUF.last(cbuf)]`.
  */
 var last = function last(cbuf) {
   return _cbuf2.default.last(cbuf);
 };
 
-/** Size of unoccupied part of <code>cbuf[CBUF.DATA]</code.
+/** Size of unoccupied part of `cbuf[CBUF.DATA]`, each element of this 'free'
+ * part is `undefined`.
+```javascript
+const freesz = (cbuf) => length(cbuf) - pop(cbuf);
+```
  * @param {CircularBuffer} cbuf
- * @returns {Integer} <code>cbuf[CBUF.DATA].length - cbuf{CBUF.POP]</code>
+ * @returns {Integer} `cbuf[CBUF.DATA].length - cbuf{CBUF.POP]`.
  */
 var freesz = function freesz(cbuf) {
   return length(cbuf) - pop(cbuf);
 };
 
 /** The contents of a circular buffer is an array of elements, starting with
- * the oldest (FIFO, <code>CBUF.shift</code> will return the starting element)
+ * the oldest (FIFO, `CBUF.shift` will return the starting element)
  * and ending with the most recently added.
+```javascript
+const contents = (cbuf) => interval(begin(cbuf), pop(cbuf), length(cbuf)).map((i) => data(cbuf)[i]); 
+```
  * This corresponds to the FIFO operations on the buffer: 
- * <code>CBUF.push</code> will append at the end while <code>CBUF.shift</code>
+ * `CBUF.push` will append at the end while `CBUF.shift`
  * will remove from the front.
  * This function will return this contents as an array of elements in FIFO
  * order.
@@ -125,9 +158,12 @@ var contents = function contents(cbuf) {
 
 /* Rest of circular buffer, i.e. list of cbuf[DATA] elements that are not
  * part of the circular buffer.
+```javascript
+const rest = (cbuf) => interval(begin(cbuf) + pop(cbuf), freesz(cbuf), length(cbuf)).map((i) => data(cbuf)[i]); 
+```
  * @param {CircularBuffer} cbuf
  * @return {Array} array of non-elements, i.e. 
- * <code>cbuf[CBUF.DATA][i]</code> where i is not an index 'in use'
+ * `cbuf[CBUF.DATA][i]` where `i` is not an index 'in use'
  * If all is well, this should be an array of 'undefined'.
  */
 var rest = function rest(cbuf) {
@@ -137,8 +173,20 @@ var rest = function rest(cbuf) {
 };
 
 /** Circular buffer invariant.
+```javascript
+const invariant = (cbuf) => 
+      length(cbuf) > 0
+    && 
+      ( 0 <= pop(cbuf) && pop(cbuf) <= length(cbuf) ) 
+    && 
+      ( 0 <= begin(cbuf) && begin(cbuf) < length(cbuf) )
+    && 
+      contents(cbuf).every((x)=> x !== undefined)
+    && 
+      rest(cbuf).every((x)=> x === undefined)
+```
  * @param {CircularBuffer} cbuf 
- * @returns {Boolean} true iff the invariant holds on <code>cbuf</code>
+ * @returns {Boolean} true iff the invariant holds on `cbuf`
  */
 var invariant = function invariant(cbuf) {
   return true && // silly JS thinks return by itself ends the statement
@@ -150,10 +198,15 @@ var invariant = function invariant(cbuf) {
 };
 
 /** Shallow comparison of arrays, maybe it's built in but I couldn't find it 
- * @param {Array} a1 to be compared with <code>a2</code>
- * @param {Array} a2 to be compared with <code>a1</code>
+```javascript
+const array_eq = (a1, a2) => 
+  (a1.length !== a2.length ? false : a1.every((x, i) => x === a2[i]));
+```
+ * @param {Array} a1 to be compared with `a2`
+ * @param {Array} a2 to be compared with `a1`
  * @returns {Boolean} true iff arrays have the same size and identical
- * elements. */
+ * elements.
+ */
 var array_eq = function array_eq(a1, a2) {
   return a1.length !== a2.length ? false : a1.every(function (x, i) {
     return x === a2[i];
@@ -164,9 +217,13 @@ var array_eq = function array_eq(a1, a2) {
  * <a
  * href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push">
  * Array.push</a> that returns a copy of the array with the element appended
+```javascript
+const array_push = (a, x) => {
+  let b = Array.from(a); b.push(x); return b;
+```
  * @param {Array} a array on a copy of which an element will be pushed
  * @param {Any} x element to be appended (pushed) to array
- * @returns {Array} copy of <code>a</code> with <code>x</code> appended
+ * @returns {Array} copy of `a` with `x` appended
  */
 var array_push = function array_push(a, x) {
   var b = (0, _from2.default)(a);b.push(x);return b;
@@ -177,18 +234,30 @@ var array_push = function array_push(a, x) {
  * <ul>
  * <li>either orig is full and then
  *
- *   <code>
- *   contents(next) == contents(orig)
- *   </code>
+ *   `contents(next) == contents(orig)`
  *
  * <li>or
  *
- *   <code>
- *   contents(next) == array_push(contents(orig), x)
- *   </code>
+ *   `contents(next) == array_push(contents(orig), x)`
  * </ul>
+ *
  * Of course, the invariant must be true before and after the operation.
- * @see {@link array_push}
+ *
+```javascript
+const cbuf_push_contract = (orig, x, next) => 
+  (
+      invariant(orig)
+    && 
+      invariant(next) 
+    && 
+      (
+            array_eq(array_push(contents(orig), x), contents(next)) && last(next) === x 
+      || 
+            CBUF.full(orig) && array_eq(contents(orig), contents(next)) 
+      )
+  );
+```
+ * @see [array_push](#array_push)
  * @param {CircularBuffer} orig circular buffer before the push
  * @param {Any} x element to be pushed, must be defined
  * @param {CircularBuffer} next circular buffer after push
@@ -199,13 +268,13 @@ var cbuf_push_contract = function cbuf_push_contract(orig, x, next) {
 };
 
 /** Execute the push operation and check that its contract is satisfied 
- * The contract is checked by {@link assert}.
+ * The contract is checked by [assert](./assert-test.md#assert).
  * @param {CircularBuffer} cbuf circular buffer on which an element will be
  * pushed
- * @param {Any} x element to be pushed, must not be <code>undefined</code>.
+ * @param {Any} x element to be pushed, must not be `undefined`,
  * @param {Boolean} result of the push operation
- * @returns {Boolean} true iff <code>CBUF.push(cbuf, x)</code> succeeded
- * @see <a href="../global.html#cbuf_push">cbuf_push</a>
+ * @returns {Boolean} true iff `CBUF.push(cbuf, x)` succeeded
+ * @see [cbuf_push](./cbuf.md#cbuf_push)
  */
 var checked_cbuf_push = function checked_cbuf_push(cbuf, x) {
   var orig = _cbuf2.default.clone(cbuf);
@@ -218,15 +287,26 @@ var checked_cbuf_push = function checked_cbuf_push(cbuf, x) {
  * Essentially, the specification says that:
  * <ul>
  * <li> either orig is empty:
- *   <code>x === undefined && next === orig</code>
+ *   `x === undefined && next === orig`
  * <li> or
- *   <code>contents(orig) == x ++ contents(next)</code>
+ *   `contents(orig) == x ++ contents(next)`
  *   where '++' means ``append''
  * </ul>
- * Naturally, both <code>orig</code> and <code>next</code> should satisfy the
+ * Naturally, both `orig` and `next` should satisfy the
  * invariant.
+ *
+```javascript
+const cbuf_shift_contract = (orig, x, next) =>
+      invariant(orig)
+   && invariant(next)
+   && (
+        pop(orig) === 0 && array_eq(contents(next), contents(orig)) && x === undefined
+      || 
+        array_eq(contents(orig).slice(1), contents(next)) && array_eq([x], contents(orig).slice(0, 1))
+    )
+```
  * @param {CircularBuffer} orig buffer before shift operation
- * @param {Any} x return of <code>cbuf_shift(orig)</code>
+ * @param {Any} x return of `cbuf_shift(orig)`
  * @param {CircularBuffer} next buffer after shift operation
  * @returns {Boolean} true iff the contract is satisfied
  */
@@ -235,11 +315,12 @@ var cbuf_shift_contract = function cbuf_shift_contract(orig, x, next) {
 };
 
 /** Execute the shift operation and check that its contract is satisfied.
- * If the contract is not satisfied, the errors is noted using {@link assert}
+ * If the contract is not satisfied, the errors is noted using
+ * [assert](./assert-test.md#assert).
  * @param {CircularBuffer} orig buffer before shift operation
- * @returns {Any} the first element of <code>orig</code> or
- * <code>undefined</code> if the latter is empty.
- * @see <a href="../global.html#cbuf_shift">cbuf_shift</a>
+ * @returns {Any} the first element of `orig` or
+ * `undefined` if the latter is empty.
+ * @see [cbuf_shift](./cbuf.md#cbuf_shift)
  */
 var checked_cbuf_shift = function checked_cbuf_shift(cbuf) {
   var orig = _cbuf2.default.clone(cbuf);
@@ -249,13 +330,14 @@ var checked_cbuf_shift = function checked_cbuf_shift(cbuf) {
 };
 
 /**
- * Function that checks <code>CBUF.iterable</code> by verifying that 
+ * Function that checks `CBUF.iterable` by verifying that 
  * the result of appending elements from a 
  *
- * <code>for ..  of</code>
+ * `for ..  of`
  *
- * loop equals <code>contents(cbuf).
- * If the test failed, it will be noted using {@link assert}
+ * loop equals [`contents`](#contents)`(cbuf)`.
+ * If the test failed, it will be noted using
+ * [assert](./assert-test.md#assert).
  * @param {CircularBuffer} cbuf to be checked
  * @returns {Boolean} true iff the test succeeded
  */
@@ -295,10 +377,11 @@ function check_iterable(cbuf) {
 }
 
 /** 
- * Check that scanning <code>cbuf</code> in a traditional way, starting from
- * cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]], yields
- * <code>contents(cbuf)</code>.
- * If the test failed, it will be noted using {@link assert}
+ * Check that scanning `cbuf` in a traditional way, starting from
+ * `cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]]`, yields
+ * `contents(cbuf)`.
+ * If the test failed, it will be noted using
+ * [assert](./assert-test.md#assert).
  * @param {CircularBuffer} cbuf to be checked
  * @returns {Boolean} true iff the test succeeded
  */

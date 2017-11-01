@@ -8,7 +8,16 @@ export PATH := $(nbin):$(PATH)
 #  include vars.mk
 #  configfiles += more.conf
 configfiles=.babelrc eslintrc.json package.json # source files
-datafiles=README.html # made
+datafiles=
+# source files that make up the module
+src=
+# source files that make up the tests
+tst=
+# docsrc are hand written documentation and need spell checking
+docsrc=README.hbs
+# all markdown files that constitute the documentation
+mdfiles=README.md $(src:%.es7=%.md) $(tst:%.es7=%.md)
+# 
 bashscripts=espell
 
 #
@@ -21,9 +30,7 @@ dirof=$(addprefix $(node)/, $1)
 babeltools=babel-cli babel-preset-es2017 babel-preset-es2015 \
 	babel-preset-stage-0 babel-plugin-transform-runtime
 linttools= eslint babel-eslint
-doctools= jsdoc # ink-docstrap
-funtools= esprima
-tools=$(babeltools) $(linttools) $(doctools) $(funtools)
+tools=$(babeltools) $(linttools)
 #
 #### Runtime libs  ###############################################
 #

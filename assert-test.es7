@@ -31,7 +31,7 @@ function error(name, message) {
 }
 
 /**
- * This is private but can be retrieved using the {@link nerrors} function.
+ * This is private but can be retrieved using the [nerrors](#nerrors) function.
  * 
  * @global 
  */
@@ -39,19 +39,19 @@ let errors = 0;
 
 /**
  * @description Non-throwing assert function. If an assertion fails, the error is
- * noted by increasing {@link nerrors} but no exception is thrown.
+ * noted by increasing [nerrors](#nerrors) but no exception is thrown.
  *
  * @param {Expression} e to be tested
  *
- * @param {String} text_if_true is <code>e</code> is 'truthy', this text
- *   will be shown using console.log()
+ * @param {String} text_if_true is `e` is 'truthy', this text
+ *   will be shown using `console.log()`.
  *
- * @param {String} text_if_false is <code>e</code> is not 'truthy', this text
- *  will be shown using console.error()
+ * @param {String} text_if_false is `e` is not 'truthy', this text
+ *  will be shown using `console.error()`
  *
- * @returns {Boolean} true iff <code>e</code> is 'truthy'
+ * @returns {Boolean} true iff `e` is 'truthy'
  *
- * @see nerrors
+ * @see [nerrors](#nerrors)
  */
 function assert(e, text_if_true, text_if_false) {
   if (e) {
@@ -71,16 +71,16 @@ function assert(e, text_if_true, text_if_false) {
  *
  * @param {Expression} e expression to be tested
  *
- * @param {String} text_if_true is <code>e</code> is 'truthy', this text
- *   will be shown using console.log()
+ * @param {String} text_if_true is `e` is 'truthy', this text
+ *   will be shown using `console.log()`.
  *
- * @param {String} text_if_false is <code>e</code> is 'truthy', this text
- *  will be shown using console.error()
+ * @param {String} text_if_false is `e` is 'truthy', this text
+ *  will be shown using `console.error()`
  *
- * @returns {Boolean} true iff <code>e</code> is 'truthy', else throws an error
- * @throws {Error} if <code>e</code> is not 'truthy'.
+ * @returns {Boolean} true iff `e` is 'truthy', else throws an error
+ * @throws {Error} if `e` is not 'truthy'.
  *
- * @see error
+ * @see [error](#error)
  */
 function assertx(e, text_if_true, text_if_false) {
   if (e) {
@@ -95,8 +95,8 @@ function assertx(e, text_if_true, text_if_false) {
 
 /**
  * @returns {Integer} the number of errors so far, i.e. the number of times 
- * {@link assert} failed.
- * @see assert
+ * [assert](#assert) failed.
+ * @see [assert](#assert)
  */
 function nerrors() {
   return errors;

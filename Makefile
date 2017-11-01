@@ -17,9 +17,6 @@ all: install doc
 # with 'lint':
 checkall: check lint
 #
-docmd=README.md cbuf.md cbuf-test.md
-doc: $(docmd)
-#
 # A bunch of rules that explain how to make '.js' files from '.es7' files,
 # process markdown files etc etc
 include rules.mk

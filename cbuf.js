@@ -79,10 +79,10 @@ var BEGIN = (0, _symbol2.default)('begin');
  * elements.
  * <br/>
  * Although not available as a direct property of the buffer -- the only
- * such properties are [DATA]{@link DATA}, [POP]{@link POP} and 
- * [BEGIN]{@link BEGIN} --
+ * such properties are [DATA](#DATA), [POP](#POP) and 
+ * [BEGIN](#BEGIN) --
  * it can easily be accessed using the expression 
- * <code>c[CBUF.DATA].length</code> where <code>c</code> is the
+ * `c[CBUF.DATA].length` where `c` is the
  * circular buffer.
  * <br/>
  * The function also [seals](
@@ -126,7 +126,7 @@ function cbuf_create(capacity) {
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
  * <br/>
  * Note that cloning a 'subclass', i.e. a circular buffer with extra data
- * properties, will usually work using <code>CBUF.clone</code> but this should be verified.
+ * properties, will usually work using `CBUF.clone` but this should be verified.
  * E.g. an extra array data property will need extra code to clone its
  * contents.
  *
@@ -160,7 +160,7 @@ function cbuf_clone(cbuf) {
  *
  * @param {CircularBuffer} cbuf a valid circular buffer
  *
- * @returns {Boolean} true iff <code>cbuf[CBUF.POP] === 0</code>
+ * @returns {Boolean} true iff `cbuf[CBUF.POP] === 0`.
  *
  * @example
  *  import CBUF from '@dvermeir/cbuf';
@@ -179,7 +179,7 @@ var cbuf_empty = function cbuf_empty(cbuf) {
  * @param {CircularBuffer} cbuf a valid circular buffer
  *
  * @returns {Boolean} true iff  
- *  <code>cbuf[CBUF.POP] === cbuf[CBUF.DATA].length</code>
+ *  `cbuf[CBUF.POP] === cbuf[CBUF.DATA].length`.
  *
  * @example
  *  import CBUF from '@dvermeir/cbuf';
@@ -204,9 +204,7 @@ var cbuf_full = function cbuf_full(cbuf) {
  * <br/>
  * If the buffer is not empty, the index of the last element in DATA is
  * <blockquote>
- * <code>
- *  cbuf[DATA][(cbuf[BEGIN] + cbuf[POP] - 1) % cbuf[DATA].length]);
- * </code>
+ *  `cbuf[DATA][(cbuf[BEGIN] + cbuf[POP] - 1) % cbuf[DATA].length])`
  * </blockquote>
  *
  * @param {CircularBuffer} cbuf a valid circular buffer
@@ -225,12 +223,12 @@ var cbuf_last = function cbuf_last(cbuf) {
  *
  * @param {CircularBuffer} cbuf a valid circular buffer 
  *
- * @param {Integer} an integer from <code>[0 .. cbuf[DATA].length[</code>
+ * @param {Integer} an integer from `[0 .. cbuf[DATA].length[`
  *
  * @returns {Integer} the index following the parameter index
- *  <code>i</code> in <code>cbuf[DATA][i]</code>. 
- *  The return value <code>r</code> also sits in
- *  <code>[0 .. cbuf[DATA].length[</code>
+ *  `i` in `cbuf[DATA][i]`.
+ *  The return value `r` also sits in
+ *  `[0 .. cbuf[DATA].length[`
  * @example
  *  import CBUF from '@dvermeir/cbuf';
  *  let c = CBUF.create(10);
@@ -247,7 +245,7 @@ var cbuf_inc = function cbuf_inc(cbuf, i) {
 };
 
 /** Append a defined element to the end of the circular buffer. The operation
- * only succeeds if the circular buffer is not [full]{@link cbuf_full}.
+ * only succeeds if the circular buffer is not [full](#cbuf_full).
  * The return value is a boolean indicating the success or failure of the 
  * append operation.
  *
@@ -255,8 +253,8 @@ var cbuf_inc = function cbuf_inc(cbuf, i) {
  *
  * @param {Any} x a <b>defined</b> object (the implementation checks this)
  *
- * @returns {Boolean} <code>true</code> iff the operation succeeded,
- *  <code>false</code> otherwise, including when <code>x === undefined</code>.
+ * @returns {Boolean} `true` iff the operation succeeded,
+ *  `false` otherwise, including when `x === undefined`
  *
  * @example
  *  import CBUF from '@dvermeir/cbuf';
@@ -285,17 +283,17 @@ function cbuf_push(cbuf, x) {
  * If the operation fails, and this can only happen if the buffer is empty,
  * <b>undefined</b> is returned.
  * <br/>
- * If the operation succeeds and returns a defined object <code>x</code> from 
- * index <code>cbuf[DATA][BEGIN]</code>, the contents of <code>x</code>'s 
+ * If the operation succeeds and returns a defined object `x` from 
+ * index `cbuf[DATA][BEGIN]`, the contents of `x`'s 
  * index will be set
- * to <b>undefined</b>. That way, the circular buffer will not be in the
- * way of a possible garbage collection of <code>x</code>
+ * to `undefined`. That way, the circular buffer will not be in the
+ * way of a possible garbage collection of `x`.
  *
  * @param {CircularBuffer} cbuf a valid circular buffer
  *
  * @return {Any} the defined first element 
- *  <code>(cbuf[CBUF.DATA][CBUF.BEGIN])</code> shifted out of cbuf 
- *  or <b>undefined</b> if the buffer is [empty]{@link cbuf_empty}
+ *  `(cbuf[CBUF.DATA][CBUF.BEGIN])` shifted out of cbuf 
+ *  or `undefined` if the buffer is [empty](#cbuf_empty).
  *
  * @example
  *  import CBUF from '@dvermeir/cbuf';
@@ -404,7 +402,7 @@ function cbuf_iterable(cbuf) {
  *
  * @param {CircularBuffer} cbuf a valid circular buffer
  *
- * @returns {String} a string representation of <code>cbuf</code>
+ * @returns {String} a string representation of `cbuf`
  *
  * @example
  * Example output:
@@ -426,36 +424,22 @@ function cbuf_tostring(cbuf) {
   return s;
 }
 
-/** All functions/constants in this file are exported. Note that the naming
- * strategy is such that an 'internal' call
- * <blockquote>
- * <code>
- * cbuf_push(c, x);
- * </code>
- * </blockquote>
- * becomes
- * <blockquote>
- * <code>
- *    CBUF.push(c,x);
- * </code>
- * </blockquote>
- * which is not too far from a 'class based'
- * <code>c.push(x)</code> 
- * where the
- * '<code>this</code>' argument is always the first argument in the 
- * '<code>CBUF.push(c, .. )</code> call. Except that the object is not called
- * '<code>this</code>' and its binding is trivial, unlike that of 
- * '<code>this</code>'.
- * </blockquote>
- * The above depends on an import statement such as
- * <blockquote>
- * <code>
- * import CBUF from '@dvermeir/cbuf';
- * </code>
- * </blockquote>
- *
+/**
+ * @description
+ * All functions/constants in the CBUF module are implemented in this file and 
+ * are exported as shown below. 
+```javascript
+	module.exports = {
+	  POP: POP, BEGIN: BEGIN, DATA: DATA,
+	  create: cbuf_create, clone: cbuf_clone,
+	  empty: cbuf_empty, full: cbuf_full, last: cbuf_last, iterable: cbuf_iterable,
+	  push: cbuf_push, inc: cbuf_inc, shift: cbuf_shift,
+	  tostring: cbuf_tostring
+	};
+```
  * @exports CBUF
  */
+
 module.exports = {
   POP: POP, BEGIN: BEGIN, DATA: DATA,
   create: cbuf_create, clone: cbuf_clone,
