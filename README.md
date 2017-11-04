@@ -45,13 +45,15 @@ Here's a quick example of creating and using a circular buffer.
 
   let c = CBUF.create(10); // c will manage DATA array of size 10
 
+  // Equivalent would be `while CBUF.push(c, read_input()) ;`
+  // because `CBUF.push()` returns `true` iff the append succeeded.
   while (! CBUF.full(c) ) // while c has some free space
     CBUF.push(c, read_input()); // read a some data and append them as a 'chunk' to the queue/buffer 
 
-  // Assert CBUF.full(c), i.e. c[CBUF.POP] === c[CBUF.DATA].length
+  // Assert `CBUF.full(c)`, i.e. `c[CBUF.POP] === c[CBUF.DATA].length`
 
   while (! CBUF.empty(c)) // while there is stuff to process
-    process(c.shift()); // process the oldest chunk and remove it from the queue
+    process(CBUF.shift(c)); // process the oldest chunk and remove it from the queue
   // etc.
 ```
 
