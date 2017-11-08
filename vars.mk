@@ -7,7 +7,7 @@ export PATH := $(nbin):$(PATH)
 # These variables can be expanded in Makefile, e.g.
 #  include vars.mk
 #  configfiles += more.conf
-configfiles=.babelrc eslintrc.json package.json # source files
+configfiles=.babelrc eslintrc.json package.json .gitignore 
 datafiles=
 # source files that make up the module
 src=

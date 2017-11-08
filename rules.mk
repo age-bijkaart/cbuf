@@ -22,7 +22,7 @@ $(call dirof, $(libs)): $(node)/%:
 #
 # Install simply makes sure that all involved files are available, e.g.
 # .es7 files will have been babelized to .js files.
-install: $(datafiles) $(bashscripts) $(tools) $(libs) $(src:%.es7=%.js) doc
+install: $(configfiles) $(datafiles) $(bashscripts) $(tools) $(libs) $(src:%.es7=%.js) doc
 	
 uninstall clean: 
 	@rm -fr $(datafiles) $(node) $(bashscripts) doc *.js \
@@ -65,5 +65,7 @@ doc: $(docsrc) espell $(mdfiles)
 	do ./espell $$f || { echo "$$f: spelling error"; exit 1; }; \
 	done
 
+npm: install
+	npm pack && npm version patch && npm publish
 
 .PHONY: all install uninstall clean check doc $(tools) $(libs)

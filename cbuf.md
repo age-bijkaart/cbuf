@@ -63,6 +63,7 @@ buffer. An 'empty' index in the array contains <b>undefined</b>
 **Example**  
 ```js
 import CBUF from '@dvermeir/cbuf';
+
  let c = CBUF.create(10);
  console.log(c[CBUF.DATA][0]); // print 'undefined'
 ```
@@ -103,7 +104,8 @@ if this buffer is not empty (POP > 0).
 import CBUF from '@dvermeir/cbuf';
  let c = CBUF.create(10);
  CBUF.push(c, 'something');
- console.log(c[CBUF.BEGIN]); // print 'something';
+ console.log(c[CBUF.BEGIN]); // print 0
+ console.log(c[CBUF.DATA][c[CBUF.BEGIN]]); // print 'something'
 ```
 
 * * *
@@ -227,7 +229,7 @@ import CBUF from '@dvermeir/cbuf';
  // make room by removing the oldest element, if it is not 'in use', e.g. by
  // a cursor pointing into it
  if ( CBUF.full(c) ) {
-   let el = c[CBUF.DATA][CBUF.BEGIN]; // oldest element
+   let el = c[CBUF.DATA][c[CBUF.BEGIN]]; // oldest element
    if (el_is_not_referred_to)
      CBUF.shift(c);
  }
@@ -310,7 +312,7 @@ append operation.
 **Example**  
 ```js
 import CBUF from '@dvermeir/cbuf';
- let c = CBUF.create(2);
+ let cbuf = CBUF.create(2);
  let x; 
  let y;
  let z;
@@ -340,7 +342,7 @@ way of a possible garbage collection of `x`.
 
 **Kind**: global function  
 **Returns**: <code>Any</code> - the defined first element 
- `(cbuf[CBUF.DATA][CBUF.BEGIN])` shifted out of cbuf 
+ `(cbuf[CBUF.DATA][cbuf[CBUF.BEGIN]])` shifted out of cbuf 
  or `undefined` if the buffer is [empty](#cbuf_empty).  
 **Params**
 
@@ -349,7 +351,7 @@ way of a possible garbage collection of `x`.
 **Example**  
 ```js
 import CBUF from '@dvermeir/cbuf';
- let c = CBUF.create(2);
+ let cbuf = CBUF.create(2);
  let x; 
  let y;
  let z;
@@ -385,7 +387,7 @@ iterable</a>
 **Example**  
 ```js
 import CBUF from '@dvermeir/cbuf';
- let c = CBUF.create(3);
+ let cbuf = CBUF.create(3);
  let x = { 'a', 'b', 'c', 'd' };
  assert(CBUF.push(cbuf,x[0])); // 'a'
  assert(CBUF.push(cbuf,x[1])); // 'b'

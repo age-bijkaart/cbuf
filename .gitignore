@@ -1,0 +1,4 @@
+# CVS/
+# node_modules/
+!.gitignore
+*.tgz
